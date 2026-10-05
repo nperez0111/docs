@@ -416,15 +416,6 @@ class User(AbstractBaseUser, BaseModel, auth_models.PermissionsMixin):
         # Set creator of documents if not yet set (e.g. documents created via server-to-server API)
         document_ids = [invitation.document_id for invitation in valid_invitations]
 
-        # created in bulk, so without the signal that reports a new access to the
-        # collaboration server
-        from core.tasks.access import (  # noqa: PLC0415 # pylint: disable=import-outside-toplevel
-            reset_service_connections_on_commit,
-        )
-
-        for document_id in document_ids:
-            reset_service_connections_on_commit(document_id, self.id)
-
         Document.objects.filter(id__in=document_ids, creator__isnull=True).update(
             creator=self
         )
