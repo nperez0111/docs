@@ -81,6 +81,7 @@ and this project adheres to
 
 ### Changed
 
+- ⬆️(dependencies) update all BlockNote packages to 0.57.0
 - 🛂(backend) let users allowed to comment list each other's accesses #2447
 - ⬆️(frontend) update BlockNote preview packages to 8d235ba9eb
 - ♻️(frontend) restore bounded editor history through native yhub rollback
