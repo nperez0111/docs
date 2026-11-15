@@ -137,6 +137,25 @@ class YdocConverter:
         token = JWTService().get_admin_token(audience=Audiences.Y_CONVERTER)
         return f"Bearer {token}"
 
+    def resolve_embed(self, source_url):
+        """Resolve metadata through the converter's SSRF-protected transport."""
+        url = f"{settings.Y_PROVIDER_API_BASE_URL}/api/embeds/"
+        try:
+            with outgoing_request("y-provider", "resolve-embed") as observed:
+                response = requests.get(
+                    url,
+                    params={"url": source_url},
+                    headers={"Authorization": self.auth_header},
+                    timeout=settings.CONVERSION_API_TIMEOUT,
+                    verify=settings.CONVERSION_API_SECURE,
+                    allow_redirects=False,
+                )
+                observed.status = response.status_code
+            response.raise_for_status()
+            return response.json()
+        except requests.RequestException as err:
+            raise ServiceUnavailableError("Embed resolver unavailable") from err
+
     def _request(self, url, data, content_type, accept):
         """Make a request to the Y-Provider API."""
         with outgoing_request("y-provider", "convert") as observed:

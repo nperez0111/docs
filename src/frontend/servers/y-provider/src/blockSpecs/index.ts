@@ -4,6 +4,7 @@ import {
   defaultInlineContentSpecs,
   withPageBreak,
 } from '@blocknote/core';
+import { embedBlockSpecs } from '@blocknote/embeds';
 
 import { CalloutBlock } from './Callout';
 import { DocChildrenBlock } from './DocChildren';
@@ -17,6 +18,7 @@ export const docsBlockNoteSchema = withPageBreak(
   BlockNoteSchema.create({
     blockSpecs: {
       ...defaultBlockSpecs,
+      ...embedBlockSpecs,
       callout: CalloutBlock(),
       docChildren: DocChildrenBlock(),
       pdf: PdfBlock(),

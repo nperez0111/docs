@@ -1,5 +1,9 @@
 import { diagramBlockMapping } from '@blocknote/diagram-block/docx-exporter';
 import {
+  bookmarkBlockMapping,
+  embedBlockMapping,
+} from '@blocknote/embeds/docx-exporter';
+import {
   inlineMathMapping,
   mathBlockMapping,
 } from '@blocknote/math-block/docx-exporter';
@@ -27,6 +31,8 @@ export const getDocxDocsSchemaMappings = (
   ...docxDefaultSchemaMappings,
   blockMapping: {
     ...docxDefaultSchemaMappings.blockMapping,
+    bookmark: bookmarkBlockMapping,
+    embed: embedBlockMapping,
     callout: blockMappingCalloutDocx,
     // We're reusing the file block mapping for PDF blocks; both share the same
     // implementation signature, so we can reuse the handler directly.

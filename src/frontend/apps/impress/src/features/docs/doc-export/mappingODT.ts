@@ -1,5 +1,9 @@
 import { diagramBlockMapping } from '@blocknote/diagram-block/odt-exporter';
 import {
+  bookmarkBlockMapping,
+  embedBlockMapping,
+} from '@blocknote/embeds/odt-exporter';
+import {
   inlineMathMapping,
   mathBlockMapping,
 } from '@blocknote/math-block/odt-exporter';
@@ -29,6 +33,8 @@ export const getOdtDocsSchemaMappings = (
   ...odtDefaultSchemaMappings,
   blockMapping: {
     ...odtDefaultSchemaMappings.blockMapping,
+    bookmark: bookmarkBlockMapping,
+    embed: embedBlockMapping,
     callout: blockMappingCalloutODT,
     image: createBlockMappingImageODT(imageUnavailableText),
     // We're reusing the file block mapping for PDF blocks

@@ -49,6 +49,45 @@ describe('fitColumnWidths', () => {
 });
 
 describe('getPdfDocsSchemaMappings', () => {
+  it.each(['bookmark', 'embed'])(
+    'exports %s with a source link without fetching media',
+    async (type) => {
+      const typst = await toTypst([
+        {
+          type,
+          props: {
+            originalUrl: 'https://example.com/source',
+            imageUrl: 'https://example.com/preview.png',
+          },
+        },
+      ]);
+      expect(typst).toContain(
+        '#link("https://example.com/source")[#"https://example.com/source"]',
+      );
+      expect(typst).not.toContain('preview.png');
+    },
+  );
+
+  it('exports the saved bookmark title and description', async () => {
+    const typst = await toTypst([
+      {
+        type: 'bookmark',
+        props: {
+          originalUrl: 'https://example.com/source',
+          title: 'Saved title',
+          description: 'Saved description',
+          imageUrl: 'https://example.com/preview.png',
+        },
+      },
+    ]);
+
+    expect(typst).toContain(
+      '#link("https://example.com/source")[#"Saved title"]',
+    );
+    expect(typst).toContain('#"Saved description"');
+    expect(typst).not.toContain('preview.png');
+  });
+
   it('renders a callout with its emoji and its background', async () => {
     const typst = await toTypst([
       {

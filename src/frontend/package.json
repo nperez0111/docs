@@ -32,6 +32,8 @@
     "server:test": "yarn COLLABORATION_SERVER run test"
   },
   "resolutions": {
+    "@blocknote/core": "https://pkg.pr.new/TypeCellOS/BlockNote/@blocknote/core@5a8085fdef88f4902f778f1d0a5c617f3eca5d0e",
+    "@blocknote/react": "https://pkg.pr.new/TypeCellOS/BlockNote/@blocknote/react@5a8085fdef88f4902f778f1d0a5c617f3eca5d0e",
     "@tiptap/core": "3.32.0",
     "@tiptap/extensions": "3.32.0",
     "@tiptap/pm": "3.32.0",
