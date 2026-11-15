@@ -3,6 +3,7 @@ import express from 'express';
 
 import { CONVERSION_FILE_MAX_SIZE } from '@/env';
 import { convertHandler } from '@/handlers';
+import { embedHandler } from '@/handlers/embedHandler';
 import { corsMiddleware, httpSecurity } from '@/middlewares';
 import { routes } from '@/routes';
 import { logger } from '@/utils';
@@ -16,6 +17,7 @@ export const initApp = () => {
   const app = express();
 
   app.use(corsMiddleware);
+  app.get('/api/embeds/', httpSecurity, embedHandler);
 
   /**
    * Route to convert Markdown or BlockNote blocks and Yjs content

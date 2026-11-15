@@ -96,6 +96,7 @@ from .filters import (
 from .throttling import (
     DocumentAccessThrottle,
     DocumentThrottle,
+    EmbedResolveThrottle,
     UserListThrottleBurst,
     UserListThrottleSustained,
 )
@@ -2697,6 +2698,27 @@ class DocumentViewSet(
                 "updated_at": document.updated_at,
             }
         )
+
+    @drf.decorators.action(
+        detail=True,
+        methods=["get"],
+        url_path="resolve-embed",
+        throttle_classes=[DocumentThrottle, EmbedResolveThrottle],
+    )
+    def resolve_embed(self, request, pk=None):
+        """Resolve an explicitly requested bookmark or embed for a document reader."""
+        self.get_object()
+        source_url = drf.serializers.URLField(max_length=4096).run_validation(
+            request.query_params.get("url")
+        )
+        parsed = urlparse(source_url)
+        if parsed.scheme not in {"http", "https"} or parsed.username or parsed.password:
+            raise drf.exceptions.ValidationError(_("Invalid URL."))
+        try:
+            result = Converter().ydoc.resolve_embed(source_url)
+        except YProviderServiceUnavailableError:
+            return drf_response.Response(status=status.HTTP_503_SERVICE_UNAVAILABLE)
+        return drf_response.Response(result, headers={"Cache-Control": "no-store"})
 
     @drf.decorators.action(
         detail=True,

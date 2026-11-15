@@ -40,6 +40,36 @@ def test_auth_header():
     assert payload["aud"] == Audiences.Y_CONVERTER
 
 
+@patch("requests.get")
+def test_resolve_embed(mock_get, settings):
+    """Use a fixed internal service with an audience-scoped JWT, not browser cookies."""
+    settings.Y_PROVIDER_API_BASE_URL = "http://converter"
+    mock_get.return_value.json.return_value = {"type": "link", "version": "1.0"}
+    assert YdocConverter().resolve_embed("https://example.com/") == {
+        "type": "link",
+        "version": "1.0",
+    }
+    args, kwargs = mock_get.call_args
+    assert args == ("http://converter/api/embeds/",)
+    assert kwargs["params"] == {"url": "https://example.com/"}
+    assert kwargs["allow_redirects"] is False
+    scheme, token = kwargs["headers"]["Authorization"].split()
+    assert scheme == "Bearer"
+    assert (
+        jwt.decode(
+            token, PUBLIC_KEY, algorithms=["RS256"], audience=Audiences.Y_CONVERTER
+        )["admin"]
+        is True
+    )
+
+
+@patch("requests.get", side_effect=requests.Timeout)
+def test_resolve_embed_service_unavailable(_mock_get):
+    """Normalize resolver transport failures for the API."""
+    with pytest.raises(ServiceUnavailableError):
+        YdocConverter().resolve_embed("https://example.com/")
+
+
 def test_convert_empty_text():
     """Should raise ValidationError when data is empty."""
     converter = YdocConverter()

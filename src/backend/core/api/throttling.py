@@ -25,6 +25,13 @@ class UserListThrottleSustained(UserRateThrottle):
     scope = "user_list_sustained"
 
 
+class EmbedResolveThrottle(UserRateThrottle):
+    """Bound outbound metadata requests per user, or IP for public readers."""
+
+    scope = "embed_resolve"
+    rate = "30/min"
+
+
 class YProviderThrottleMixin:
     """Skip throttling for requests from the collaboration server."""
 

@@ -1,4 +1,8 @@
 import {
+  bookmarkBlockMapping,
+  embedBlockMapping,
+} from '@blocknote/embeds/typst-exporter';
+import {
   inlineMathMapping,
   mathBlockMapping,
 } from '@blocknote/math-block/typst-exporter';
@@ -65,6 +69,8 @@ export const getPdfDocsSchemaMappings = (
   ...typstDefaultSchemaMappings,
   blockMapping: {
     ...typstDefaultSchemaMappings.blockMapping,
+    bookmark: bookmarkBlockMapping,
+    embed: embedBlockMapping,
     callout: blockMappingCalloutPDF,
     image: createBlockMappingImagePDF(imageUnavailableText),
     // We're using the file block mapping for PDF blocks

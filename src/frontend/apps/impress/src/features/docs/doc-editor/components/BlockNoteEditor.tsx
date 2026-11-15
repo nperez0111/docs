@@ -12,6 +12,12 @@ import {
   createReactDiagramBlockSpec,
   locales as diagramLocales,
 } from '@blocknote/diagram-block';
+import {
+  EmbedExtension,
+  PasteChoice,
+  embedBlockSpecs,
+} from '@blocknote/embeds';
+import '@blocknote/embeds/style.css';
 import { BlockNoteView } from '@blocknote/mantine';
 import '@blocknote/mantine/style.css';
 import {
@@ -87,6 +93,7 @@ import {
   UserMentionInlineContent,
   getPastedDocInterlink,
 } from './custom-inline-content';
+import { createEmbedsOptions } from './embeds';
 import XLMultiColumn from './xl-multi-column';
 
 const localesBNMultiColumn = XLMultiColumn?.locales;
@@ -96,6 +103,7 @@ const baseBlockNoteSchema = withPageBreak(
   BlockNoteSchema.create({
     blockSpecs: {
       ...defaultBlockSpecs,
+      ...embedBlockSpecs,
       audio: ReactAudioBlock(),
       file: ReactFileBlock(),
       image: ReactImageBlock(),
@@ -127,6 +135,7 @@ interface BlockNoteEditorProps {
 }
 
 export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
+  const embeds = useMemo(() => createEmbedsOptions(doc.id), [doc.id]);
   const { user } = useAuth();
   const { setEditor } = useEditorStore();
   const { themeTokens } = useCunninghamTheme();
@@ -259,7 +268,8 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
           ai: localesBNAI?.[langLocalesBNAI as keyof typeof localesBNAI],
         }),
       },
-      pasteHandler: ({ event, editor: pasteEditor, defaultPasteHandler }) => {
+      pasteHandler: (context) => {
+        const { event, editor: pasteEditor, defaultPasteHandler } = context;
         // Get clipboard data
         const blocknoteData = event.clipboardData?.getData('blocknote/html');
 
@@ -301,9 +311,14 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
           return true;
         }
 
+        // Keep Docs interlinks ahead of the external URL paste chooser.
+        if (pasteEditor.getExtension(EmbedExtension)?.handlePaste(context)) {
+          return true;
+        }
         return defaultPasteHandler();
       },
       extensions: [
+        EmbedExtension(embeds),
         // Highlights the source of code blocks and of the math / diagram
         // blocks' editable LaTeX / Mermaid popups.
         syntaxHighlighter,
@@ -338,6 +353,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
     }),
     [
       aiExtension,
+      embeds,
       cursorName,
       langLocalesBN,
       langLocalesBNMultiColumn,
@@ -390,6 +406,7 @@ export const BlockNoteEditor = ({ doc, provider }: BlockNoteEditorProps) => {
         // To not clipped the floating part in the editor area
         portalElements={{ default: 'body' }}
       >
+        <PasteChoice />
         {aiBlockNoteAllowed && AIMenuController && AIMenu && (
           <AIMenuController aiMenu={AIMenu} />
         )}
@@ -425,6 +442,7 @@ export const BlockNoteReader = ({
   const { user } = useAuth();
   const { setEditor } = useEditorStore();
   const { threadStore } = useComments(docId, false, user);
+  const embeds = useMemo(() => createEmbedsOptions(docId), [docId]);
   const editor = useCreateBlockNote(
     withCollaboration({
       collaboration: {
@@ -438,6 +456,7 @@ export const BlockNoteReader = ({
       setIdAttribute: true,
       schema: blockNoteSchema,
       extensions: [
+        EmbedExtension(embeds),
         CommentsExtension({
           threadStore,
           resolveUsers: async () => {
@@ -446,7 +465,7 @@ export const BlockNoteReader = ({
         }),
       ],
     }),
-    [initialContent, threadStore],
+    [initialContent, threadStore, embeds],
   );
 
   useEffect(() => {

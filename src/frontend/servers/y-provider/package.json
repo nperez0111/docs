@@ -17,13 +17,17 @@
   },
   "dependencies": {
     "@blocknote/core": "0.57.0",
+    "@blocknote/embeds": "https://pkg.pr.new/TypeCellOS/BlockNote/@blocknote/embeds@5a8085fdef88f4902f778f1d0a5c617f3eca5d0e",
     "@blocknote/server-util": "0.57.0",
+    "@blocknote/xl-embed-server": "https://pkg.pr.new/TypeCellOS/BlockNote/@blocknote/xl-embed-server@5a8085fdef88f4902f778f1d0a5c617f3eca5d0e",
     "@sentry/node": "10.75.0",
     "@sentry/profiling-node": "10.75.0",
     "@tiptap/extensions": "*",
     "cors": "2.8.6",
     "express": "5.2.1",
     "jose": "6.2.12",
+    "ipaddr.js": "2.2.0",
+    "undici": "7.30.2",
     "y-prosemirror": "1.3.7",
     "yjs": "*"
   },

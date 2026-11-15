@@ -12,6 +12,7 @@ from core.models import DocumentAccess, RoleChoices, get_trashbin_cutoff
 ACTION_FOR_METHOD_TO_PERMISSION = {
     "abilities": {"GET": "retrieve"},
     "children": {"GET": "children_list", "POST": "children_create"},
+    "resolve_embed": {"GET": "retrieve"},
 }
 
 

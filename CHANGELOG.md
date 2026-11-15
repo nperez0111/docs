@@ -6,6 +6,10 @@ and this project adheres to
 
 ## [Unreleased]
 
+### Added
+
+- ✨(frontend) add opt-in URL bookmarks and live embeds to documents
+
 ### Changed
 
 - 📦️(docker) keep the yarn cache out of the node images #2992
